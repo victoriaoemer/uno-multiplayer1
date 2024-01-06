@@ -1,0 +1,10 @@
+{
+  "$schema": "https://www.partykit.io/schema.json",
+  "name": "uno-multiplayer1",
+  "main": "src/server.ts",
+  "compatibilityDate": "2024-01-06",
+  "serve": {
+    "path": "public",
+    "build": "src/client.ts"
+  }
+}
