@@ -42,10 +42,10 @@ function add(text: string) {
 
 function addCard(cardText: string, color: string) {
   const card = document.createElement("div");
-  card.textContent = cardText;
-  card.className = `card ${color}`;
+  const number = cardText.split(' '); // Extract the numeric value from cardText
+  card.textContent = number[2];
+  card.className = `card discard-pile-card ${color.toLowerCase()}`;
   card.onclick = () => {
-    // Handle card click event
     moveCardToDiscardPile(cardText);
   };
 
@@ -55,7 +55,7 @@ function addCard(cardText: string, color: string) {
 function moveCardToDiscardPile(cardText: string) {
   const discardPileContainer = document.getElementById("discard-pile") as HTMLDivElement;
   const discardedCard = document.createElement("div");
-  discardedCard.textContent = cardText;
+  discardedCard.textContent = cardText.split(' ')[2];
   const color = cardText.slice(0, -1);
   discardedCard.className = `card discard-pile-card ${color.toLowerCase()}`;
   discardPileContainer.appendChild(discardedCard);

@@ -78,7 +78,7 @@ export default class Server implements Party.Server {
     // Create Uno deck with cards of different colors and numbers
     for (const color of colors) {
       for (const number of numbers) {
-        deck.push(`${color}${number}`);
+        deck.push(`${color}  ${number}`);
       }
     }
   
