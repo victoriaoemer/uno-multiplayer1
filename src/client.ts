@@ -15,7 +15,7 @@ const conn = new PartySocket({
 });
 
 
-(window as any).drawCard = function() {
+(window as any).drawCard = function () {
   conn.send('drawCard');
 };
 
@@ -42,32 +42,25 @@ function add(text: string) {
 
 function addCard(cardText: string, color: string) {
   const card = document.createElement("div");
-  card.textContent = cardText;
+  card.textContent = cardText.split(" ")[1];
   card.className = `card ${color}`;
   card.onclick = () => {
     // Handle card click event
-    displayCardValue(cardText);
-    moveCardToDiscardPile(cardText);
+    console.log(cardText)
+    conn.send(`moveToDiscardPile:${cardText}`);
   };
 
   output.appendChild(card);
 }
 
-function moveCardToDiscardPile(cardText: string) {
-  const discardPileContainer = document.getElementById("discard-pile") as HTMLDivElement;
-  const discardedCard = document.createElement("div");
-  discardedCard.textContent = cardText;
-  discardedCard.className = `card discard-pile-card`;
-  discardPileContainer.appendChild(discardedCard);
-
-  conn.send(`moveToDiscardPile:${cardText}`);
-}
 
 function movedCardToDiscardPile(cardText: string) {
   const discardPileContainer = document.getElementById("discard-pile") as HTMLDivElement;
   const discardedCard = document.createElement("div");
-  discardedCard.textContent = cardText;
-  discardedCard.className = `card discard-pile-card`;
+  discardedCard.textContent = cardText.split(" ")[1];
+  const color = cardText.split(" ")[0]; // Extract color from cardText
+
+  discardedCard.className = `card discard-pile-card ${color}`;
   discardPileContainer.appendChild(discardedCard);
 }
 
@@ -84,9 +77,9 @@ conn.addEventListener("message", (event) => {
   if (message.startsWith("yourCards:")) {
     const cardsString = message.substring(10);
     const cards = cardsString.split(',');
-    
+
     cards.forEach((cardText) => {
-      const color = cardText.slice(0, -1); // Extract color from cardText
+      const color = cardText.split(" ")[0]; // Extract color from cardText
       addCard(cardText, color);
     });
   } else if (message.startsWith("userJoined:")) {
@@ -94,9 +87,9 @@ conn.addEventListener("message", (event) => {
     add(`${username} joined the party!`);
   } else if (message.startsWith("drawnCard:")) {
     const drawnCard = message.substring(10);
-    const color = drawnCard.slice(0, -1);
+    const color = drawnCard.split(" ")[0];
     addCard(drawnCard, color);
-  } else if (message.startsWith("movedToDiscardPile:")){
+  } else if (message.startsWith("movedToDiscardPile:")) {
     const cardText = message.substring(19);
     movedCardToDiscardPile(cardText);
   } else {
@@ -118,7 +111,7 @@ conn.addEventListener("message", (event) => {
   }
 };
 
-(window as any).startGame = function() {
+(window as any).startGame = function () {
   conn.send('startGame');
 };
 

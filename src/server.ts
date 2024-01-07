@@ -17,7 +17,7 @@ export default class Server implements Party.Server {
     // Create Uno deck with cards of different colors and numbers for the draw pile
     for (const color of colors) {
       for (const number of numbers) {
-        this.drawPile.push(`${color}${number}`);
+        this.drawPile.push(`${color} ${number}`);
       }
     }
 
@@ -40,6 +40,7 @@ export default class Server implements Party.Server {
   moveCardToDiscardPile(player: Party.Connection, cardText: string) {
     // Validate if the move is legal according to your Uno game rules
     // For simplicity, let's assume any card can be moved to the discard pile for now
+    console.log(`Player ${player.id} moved card ${cardText} to discard pile`);
     this.discardPile.push(cardText);
     this.room.broadcast(`movedToDiscardPile:${cardText}`);
   }
@@ -78,7 +79,7 @@ export default class Server implements Party.Server {
     // Create Uno deck with cards of different colors and numbers
     for (const color of colors) {
       for (const number of numbers) {
-        deck.push(`${color}${number}`);
+        deck.push(`${color} ${number}`);
       }
     }
   
@@ -112,7 +113,8 @@ export default class Server implements Party.Server {
     } else if (message === 'drawCard') {
       this.drawCard(sender);
     }if (message.startsWith("moveToDiscardPile:")) {
-      const cardText = message.substring(19);
+      const cardText = message.split(":")[1];
+      console.log(message);
       this.moveCardToDiscardPile(sender, cardText);
     } else {
       console.log(`connection ${sender.id} sent message: ${message}`);
