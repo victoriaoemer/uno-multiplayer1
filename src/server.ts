@@ -7,7 +7,6 @@ export default class Server implements Party.Server {
 
 
   constructor(readonly room: Party.Room) {
-    this.initializeDrawPile();
   }
 
   initializeDrawPile() {
@@ -26,6 +25,10 @@ export default class Server implements Party.Server {
       const j = Math.floor(Math.random() * (i + 1));
       [this.drawPile[i], this.drawPile[j]] = [this.drawPile[j], this.drawPile[i]];
     }
+
+    const initialCard = this.drawPile.pop();
+    this.discardPile.push(initialCard);
+    this.room.broadcast(`movedToDiscardPile:${initialCard}`);
   }
 
   drawCard(player: Party.Connection) {
@@ -38,11 +41,25 @@ export default class Server implements Party.Server {
   }
 
   moveCardToDiscardPile(player: Party.Connection, cardText: string) {
-    // Validate if the move is legal according to your Uno game rules
-    // For simplicity, let's assume any card can be moved to the discard pile for now
-    console.log(`Player ${player.id} moved card ${cardText} to discard pile`);
-    this.discardPile.push(cardText);
-    this.room.broadcast(`movedToDiscardPile:${cardText}`);
+    const lastCardOnDiscardPile = this.discardPile[this.discardPile.length - 1];
+
+    // Check if the move is legal according to Uno rules
+    if (!lastCardOnDiscardPile || this.isMoveLegal(cardText, lastCardOnDiscardPile)) {
+      console.log(`Player ${player.id} moved card ${cardText} to discard pile`);
+      this.discardPile.push(cardText);
+      this.room.broadcast(`movedToDiscardPile:${cardText}`);
+    } else {
+      // Inform the player that the move is illegal
+      player.send(`illegalMove:${cardText}`);
+    }
+  }
+
+  isMoveLegal(card1: string, card2: string): boolean {
+    const [color1, number1] = card1.split(" ");
+    const [color2, number2] = card2.split(" ");
+
+    // Check if the colors match or the numbers match
+    return color1 === color2 || number1 === number2;
   }
 
   shufflePlayedCards() {
@@ -74,21 +91,21 @@ export default class Server implements Party.Server {
     const colors = ['red', 'blue', 'green', 'yellow'];
     const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     const deck = [];
-    
-  
+
+
     // Create Uno deck with cards of different colors and numbers
     for (const color of colors) {
       for (const number of numbers) {
         deck.push(`${color} ${number}`);
       }
     }
-  
+
     // Shuffle the deck
     for (let i = deck.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [deck[i], deck[j]] = [deck[j], deck[i]];
     }
-  
+
     // Deal 7 cards to each player
     this.room.connections.forEach((player) => {
       const playerCards = deck.slice(0, 7);
@@ -96,23 +113,24 @@ export default class Server implements Party.Server {
       deck.splice(0, 7); // Remove dealt cards from the deck
     });
   }
-  
-  
+
+
 
   onMessage(message: string, sender: Party.Connection) {
     if (message.startsWith("login:")) {
       const username = message.substring(6);
-  
+
       // Send the username to the current connection
       sender.send(`Welcome, ${username}!`);
-  
+
       // Broadcast the new user to all connections except the sender
       this.room.broadcast(`userJoined:${username}`, [sender.id]);
-    } else   if (message === 'startGame') {
+    } else if (message === 'startGame') {
+      this.initializeDrawPile();
       this.dealCards();
     } else if (message === 'drawCard') {
       this.drawCard(sender);
-    }if (message.startsWith("moveToDiscardPile:")) {
+    } if (message.startsWith("moveToDiscardPile:")) {
       const cardText = message.split(":")[1];
       console.log(message);
       this.moveCardToDiscardPile(sender, cardText);

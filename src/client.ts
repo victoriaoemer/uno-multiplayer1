@@ -5,6 +5,7 @@ import PartySocket from "partysocket";
 declare const PARTYKIT_HOST: string;
 
 let pingInterval: ReturnType<typeof setInterval>;
+let isFirstCard = true;
 
 const output = document.getElementById("app") as HTMLDivElement;
 const loginForm = document.getElementById("login-form") as HTMLDivElement;
@@ -62,6 +63,25 @@ function movedCardToDiscardPile(cardText: string) {
 
   discardedCard.className = `card discard-pile-card ${color}`;
   discardPileContainer.appendChild(discardedCard);
+
+  if (!isFirstCard) {
+
+    const handCards = document.getElementsByClassName("card");
+
+
+
+    for (let i = 0; i < handCards.length; i++) {
+      const handCard = handCards[i] as HTMLElement;
+      if (handCard.textContent === discardedCard.textContent && handCard.className.split(" ")[1] === discardedCard.className.split(" ")[2]) {
+        console.log(handCard.className.split(" ")[1]);
+        console.log(discardedCard.className.split(" ")[2]);
+        handCard.remove();
+        break; // Assuming there is only one matching card in the hand
+      }
+    }
+  }
+  isFirstCard = false;
+
 }
 
 function displayCardValue(cardText: string) {
@@ -92,6 +112,9 @@ conn.addEventListener("message", (event) => {
   } else if (message.startsWith("movedToDiscardPile:")) {
     const cardText = message.substring(19);
     movedCardToDiscardPile(cardText);
+  } else if (message.startsWith("illegalMove:")) {
+    const cardText = message.split(":")[1];
+    alert(`Illegal move! You cannot play ${cardText} on the current discard pile.`);
   } else {
     add(`${message}`);
   }
