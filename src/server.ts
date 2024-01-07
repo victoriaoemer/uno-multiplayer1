@@ -78,7 +78,7 @@ export default class Server implements Party.Server {
     // Create Uno deck with cards of different colors and numbers
     for (const color of colors) {
       for (const number of numbers) {
-        deck.push(`${color}  ${number}`);
+        deck.push(`${color}${number}`);
       }
     }
   
@@ -111,7 +111,7 @@ export default class Server implements Party.Server {
       this.dealCards();
     } else if (message === 'drawCard') {
       this.drawCard(sender);
-    } if (message.startsWith("moveToDiscardPile:")) {
+    }if (message.startsWith("moveToDiscardPile:")) {
       const cardText = message.substring(19);
       this.moveCardToDiscardPile(sender, cardText);
     } else {

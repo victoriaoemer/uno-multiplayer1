@@ -42,10 +42,11 @@ function add(text: string) {
 
 function addCard(cardText: string, color: string) {
   const card = document.createElement("div");
-  const number = cardText.split(' '); // Extract the numeric value from cardText
-  card.textContent = number[2];
-  card.className = `card discard-pile-card ${color.toLowerCase()}`;
+  card.textContent = cardText;
+  card.className = `card ${color}`;
   card.onclick = () => {
+    // Handle card click event
+    displayCardValue(cardText);
     moveCardToDiscardPile(cardText);
   };
 
@@ -55,16 +56,24 @@ function addCard(cardText: string, color: string) {
 function moveCardToDiscardPile(cardText: string) {
   const discardPileContainer = document.getElementById("discard-pile") as HTMLDivElement;
   const discardedCard = document.createElement("div");
-  discardedCard.textContent = cardText.split(' ')[2];
-  const color = cardText.slice(0, -1);
-  discardedCard.className = `card discard-pile-card ${color.toLowerCase()}`;
+  discardedCard.textContent = cardText;
+  discardedCard.className = `card discard-pile-card`;
   discardPileContainer.appendChild(discardedCard);
 
+  conn.send(`moveToDiscardPile:${cardText}`);
+}
+
+function movedCardToDiscardPile(cardText: string) {
+  const discardPileContainer = document.getElementById("discard-pile") as HTMLDivElement;
+  const discardedCard = document.createElement("div");
+  discardedCard.textContent = cardText;
+  discardedCard.className = `card discard-pile-card`;
+  discardPileContainer.appendChild(discardedCard);
 }
 
 function displayCardValue(cardText: string) {
   const cardValue = cardText // Extract the numeric value from cardText
-  alert(`Clicked card value: ${cardValue}`);
+  console.log(`Clicked card value: ${cardValue}`);
 }
 
 
@@ -87,6 +96,9 @@ conn.addEventListener("message", (event) => {
     const drawnCard = message.substring(10);
     const color = drawnCard.slice(0, -1);
     addCard(drawnCard, color);
+  } else if (message.startsWith("movedToDiscardPile:")){
+    const cardText = message.substring(19);
+    movedCardToDiscardPile(cardText);
   } else {
     add(`${message}`);
   }
