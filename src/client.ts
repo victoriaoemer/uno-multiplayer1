@@ -39,16 +39,32 @@ function add(text: string) {
   output.appendChild(document.createElement("br"));
 }
 
+
 function addCard(cardText: string, color: string) {
   const card = document.createElement("div");
   card.textContent = cardText;
   card.className = `card ${color}`;
   card.onclick = () => {
     // Handle card click event
-    // You can add logic to play the card or perform other actions
+    moveCardToDiscardPile(cardText);
   };
 
   output.appendChild(card);
+}
+
+function moveCardToDiscardPile(cardText: string) {
+  const discardPileContainer = document.getElementById("discard-pile") as HTMLDivElement;
+  const discardedCard = document.createElement("div");
+  discardedCard.textContent = cardText;
+  const color = cardText.slice(0, -1);
+  discardedCard.className = `card discard-pile-card ${color.toLowerCase()}`;
+  discardPileContainer.appendChild(discardedCard);
+
+}
+
+function displayCardValue(cardText: string) {
+  const cardValue = cardText // Extract the numeric value from cardText
+  alert(`Clicked card value: ${cardValue}`);
 }
 
 

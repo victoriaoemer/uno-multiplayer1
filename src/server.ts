@@ -3,6 +3,8 @@ import type * as Party from "partykit/server";
 
 export default class Server implements Party.Server {
   drawPile: string[] = [];
+  discardPile: string[] = [];
+
 
   constructor(readonly room: Party.Room) {
     this.initializeDrawPile();
@@ -33,6 +35,13 @@ export default class Server implements Party.Server {
 
     const drawnCard = this.drawPile.pop();
     player.send(`drawnCard:${drawnCard}`);
+  }
+
+  moveCardToDiscardPile(player: Party.Connection, cardText: string) {
+    // Validate if the move is legal according to your Uno game rules
+    // For simplicity, let's assume any card can be moved to the discard pile for now
+    this.discardPile.push(cardText);
+    this.room.broadcast(`movedToDiscardPile:${cardText}`);
   }
 
   shufflePlayedCards() {
@@ -102,6 +111,9 @@ export default class Server implements Party.Server {
       this.dealCards();
     } else if (message === 'drawCard') {
       this.drawCard(sender);
+    } if (message.startsWith("moveToDiscardPile:")) {
+      const cardText = message.substring(19);
+      this.moveCardToDiscardPile(sender, cardText);
     } else {
       console.log(`connection ${sender.id} sent message: ${message}`);
       this.room.broadcast(
