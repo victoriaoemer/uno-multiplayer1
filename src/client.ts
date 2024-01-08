@@ -2,13 +2,14 @@ import "./styles.css";
 
 /*
 TODO:
-Anzeigen, wie viele Spieler im Raum sind
+umlagern in react app!!!!
+Authentifizierung machen
 Anzeigen, wer wie viele Karten hat
 Zug nach einmal Spielen beenden
 Anzeigen, wer gerade am Zug ist
 Sonderregeln??
 Gewinnen, wenn keine Karten mehr gespielt werden können
-Deck mischen??
+Deck mischen - wenn Deck ausgespielt wurde, passiert scheiße
 Ablagestapel auf oberste Karte reduzieren
 */
 
