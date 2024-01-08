@@ -104,6 +104,11 @@ conn.addEventListener("message", (event) => {
   } else if (message.startsWith("userJoined:")) {
     const username = message.substring(11);
     add(`${username} joined the party!`);
+  } else if (message.startsWith("players:")) {
+    const playersList = document.getElementById("players-list") as HTMLDivElement;
+    const usernames = message.substring(8).split(",");
+    playersList.textContent = `Players: ${usernames.join(", ")}`;
+
   } else if (message === "gameStarted") {
     const startGameButton = document.getElementById("start-game") as HTMLButtonElement;
     startGameButton.style.display = "none";
@@ -119,7 +124,7 @@ conn.addEventListener("message", (event) => {
   } else if (message.startsWith("illegalMove:")) {
     const cardText = message.split(":")[1];
     alert(`Illegal move! You cannot play ${cardText} on the current discard pile.`);
-  } else if(message.startsWith("Willkommen")) {
+  } else if (message.startsWith("Willkommen")) {
     console.log(message);
     add(`${message}`);
   }

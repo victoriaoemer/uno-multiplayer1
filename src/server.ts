@@ -4,6 +4,8 @@ import type * as Party from "partykit/server";
 export default class Server implements Party.Server {
   drawPile: string[] = [];
   discardPile: string[] = [];
+  connectionUsernames: Map<string, string> = new Map<string, string>();
+
 
 
   constructor(readonly room: Party.Room) {
@@ -75,6 +77,22 @@ export default class Server implements Party.Server {
   room: ${this.room.id}
   url: ${new URL(ctx.request.url).pathname}`
     );
+
+  }
+  onDisconnect(conn: Party.Connection) {
+    // ...
+
+    // Entferne die Verbindungs-ID aus der Map
+    this.connectionUsernames.delete(conn.id);
+    this.broadcastPlayers();
+  }
+
+  broadcastPlayers() {
+    // Erstelle ein Array mit Benutzernamen
+    const usernames = Array.from(this.connectionUsernames.values());
+
+    // Sende die Liste der Benutzernamen an alle Clients
+    this.room.broadcast(`players:${usernames.join(",")}`);
   }
 
   dealCards() {
@@ -109,7 +127,9 @@ export default class Server implements Party.Server {
     if (message.startsWith("login:")) {
       const username = message.substring(6);
       sender.send(`Willkommen ${username}!`);
+      this.connectionUsernames.set(sender.id, username); // Setze den Benutzernamen
       this.room.broadcast(`userJoined:${username}`, [sender.id]);
+      this.broadcastPlayers();
     } else if (message === 'startGame') {
       this.initializeDrawPile();
       this.dealCards();
