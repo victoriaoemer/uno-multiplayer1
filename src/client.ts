@@ -23,6 +23,7 @@ const conn = new PartySocket({
 // Machen Sie die Login-Funktion global verfügbar
 (window as any).login = function () {
   const usernameInput = document.getElementById("username") as HTMLInputElement;
+
   const username = usernameInput.value.trim();
 
   if (username !== "") {
@@ -108,6 +109,8 @@ conn.addEventListener("message", (event) => {
   } else if (message === "gameStarted") {
     const startGameButton = document.getElementById("start-game") as HTMLButtonElement;
     startGameButton.style.display = "none";
+    const drawpile = document.getElementsByClassName("drawpile")[0] as HTMLElement;
+    drawpile.style.display = "block";
   } else if (message.startsWith("drawnCard:")) {
     const drawnCard = message.substring(10);
     const color = drawnCard.split(" ")[0];
