@@ -45,11 +45,9 @@ export default class Server implements Party.Server {
 
     // Check if the move is legal according to Uno rules
     if (!lastCardOnDiscardPile || this.isMoveLegal(cardText, lastCardOnDiscardPile)) {
-      console.log(`Player ${player.id} moved card ${cardText} to discard pile`);
       this.discardPile.push(cardText);
       this.room.broadcast(`movedToDiscardPile:${cardText}`);
     } else {
-      // Inform the player that the move is illegal
       player.send(`illegalMove:${cardText}`);
     }
   }
@@ -63,14 +61,6 @@ export default class Server implements Party.Server {
   }
 
   shufflePlayedCards() {
-    // Implement logic to shuffle cards from played pile back to draw pile
-    // if draw pile is empty.
-    // You may need to keep track of the played cards in another array.
-    // For simplicity, you can implement a basic reshuffling logic here.
-    // Make sure to adapt it to your specific game rules.
-    // ...
-
-    // Placeholder for reshuffling logic
     const shuffledCards = this.drawPile.slice(); // Copy draw pile
     this.drawPile = []; // Clear draw pile
     this.initializeDrawPile(); // Initialize draw pile again
@@ -115,15 +105,10 @@ export default class Server implements Party.Server {
   }
 
 
-
   onMessage(message: string, sender: Party.Connection) {
     if (message.startsWith("login:")) {
       const username = message.substring(6);
-
-      // Send the username to the current connection
-      sender.send(`Welcome, ${username}!`);
-
-      // Broadcast the new user to all connections except the sender
+      sender.send(`Willkommen ${username}!`);
       this.room.broadcast(`userJoined:${username}`, [sender.id]);
     } else if (message === 'startGame') {
       this.initializeDrawPile();
@@ -133,10 +118,8 @@ export default class Server implements Party.Server {
       this.drawCard(sender);
     } if (message.startsWith("moveToDiscardPile:")) {
       const cardText = message.split(":")[1];
-      console.log(message);
       this.moveCardToDiscardPile(sender, cardText);
     } else {
-      console.log(`connection ${sender.id} sent message: ${message}`);
       this.room.broadcast(
         `${sender.id}: ${message}`,
         [sender.id]

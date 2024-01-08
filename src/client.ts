@@ -1,5 +1,17 @@
 import "./styles.css";
 
+/*
+TODO:
+Anzeigen, wie viele Spieler im Raum sind
+Anzeigen, wer wie viele Karten hat
+Zug nach einmal Spielen beenden
+Anzeigen, wer gerade am Zug ist
+Sonderregeln??
+Gewinnen, wenn keine Karten mehr gespielt werden können
+Deck mischen??
+Ablagestapel auf oberste Karte reduzieren
+*/
+
 import PartySocket from "partysocket";
 
 declare const PARTYKIT_HOST: string;
@@ -8,7 +20,6 @@ let pingInterval: ReturnType<typeof setInterval>;
 let isFirstCard = true;
 
 const output = document.getElementById("app") as HTMLDivElement;
-const loginForm = document.getElementById("login-form") as HTMLDivElement;
 
 const conn = new PartySocket({
   host: PARTYKIT_HOST,
@@ -16,14 +27,9 @@ const conn = new PartySocket({
 });
 
 
-(window as any).drawCard = function () {
-  conn.send('drawCard');
-};
-
-// Machen Sie die Login-Funktion global verfügbar
 (window as any).login = function () {
+  const loginForm = document.getElementById("login-form") as HTMLDivElement;
   const usernameInput = document.getElementById("username") as HTMLInputElement;
-
   const username = usernameInput.value.trim();
 
   if (username !== "") {
@@ -36,25 +42,29 @@ const conn = new PartySocket({
   }
 };
 
-function add(text: string) {
-  output.appendChild(document.createTextNode(text));
-  output.appendChild(document.createElement("br"));
-}
-
+(window as any).startGame = function () {
+  conn.send('startGame');
+};
 
 function addCard(cardText: string, color: string) {
   const card = document.createElement("div");
   card.textContent = cardText.split(" ")[1];
   card.className = `card ${color}`;
   card.onclick = () => {
-    // Handle card click event
-    console.log(cardText)
     conn.send(`moveToDiscardPile:${cardText}`);
   };
 
   output.appendChild(card);
 }
 
+function add(text: string) {
+  output.appendChild(document.createTextNode(text));
+  output.appendChild(document.createElement("br"));
+}
+
+(window as any).drawCard = function () {
+  conn.send('drawCard');
+};
 
 function movedCardToDiscardPile(cardText: string) {
   const discardPileContainer = document.getElementById("discard-pile") as HTMLDivElement;
@@ -69,29 +79,17 @@ function movedCardToDiscardPile(cardText: string) {
 
     const handCards = document.getElementsByClassName("card");
 
-
-
     for (let i = 0; i < handCards.length; i++) {
       const handCard = handCards[i] as HTMLElement;
       if (handCard.textContent === discardedCard.textContent && handCard.className.split(" ")[1] === discardedCard.className.split(" ")[2]) {
-        console.log(handCard.className.split(" ")[1]);
-        console.log(discardedCard.className.split(" ")[2]);
         handCard.remove();
         break; // Assuming there is only one matching card in the hand
       }
     }
   }
   isFirstCard = false;
-
 }
 
-function displayCardValue(cardText: string) {
-  const cardValue = cardText // Extract the numeric value from cardText
-  console.log(`Clicked card value: ${cardValue}`);
-}
-
-
-// Neues Event für das Empfangen von Benutzernamen
 conn.addEventListener("message", (event) => {
   const message = event.data;
 
@@ -121,37 +119,9 @@ conn.addEventListener("message", (event) => {
   } else if (message.startsWith("illegalMove:")) {
     const cardText = message.split(":")[1];
     alert(`Illegal move! You cannot play ${cardText} on the current discard pile.`);
-  } else {
+  } else if(message.startsWith("Willkommen")) {
+    console.log(message);
     add(`${message}`);
   }
 });
 
-(window as any).login = function () {
-  const usernameForm = document.getElementById("login-form") as HTMLDivElement;
-  const usernameInput = document.getElementById("username") as HTMLInputElement;
-  const username = usernameInput.value.trim();
-
-  if (username !== "") {
-    // Send the username to the server
-    conn.send(`login:${username}`);
-    // Hide the login form after successful login
-    loginForm.style.display = "none";
-  } else {
-    alert("Please enter a valid username.");
-  }
-};
-
-(window as any).startGame = function () {
-  conn.send('startGame');
-
-};
-
-// You can even start sending messages before the connection is open!
-
-
-// Let's listen for when the connection opens
-// And send a ping every 2 seconds right after
-conn.addEventListener("open", () => {
-  add("Connected!");
-
-});
