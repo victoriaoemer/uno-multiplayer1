@@ -20,17 +20,24 @@
 </head>
 
 <body>
-  <div id="app">
-    <h1>🎈 Welcome to PartyKit!</h1>
+  <div id="game" class="game-container">
+    <div id="app">
+      <h1>🎈 Welcome to PartyKit!</h1>
+    </div>
+    <div id="login-form">
+      <image src="/images/UNO_Logo.png" width="80" alt="UNO Logo" />
+      <br>
+
+      <label for="username">Enter your username:</label>
+      <input type="text" id="username" />
+      <button onclick="login()" style="margin-top: 15px;">Login</button>
+    </div>
+    <button onclick="startGame()" id="start-game"> Karten austeilen </button>
+    <button onclick="drawCard()" class="drawpile">
+      <image src="/images/UNO_Logo.png" width="80" alt="UNO Logo" />
+    </button>
+    <div id="discard-pile" class="discard-pile-container"></div>
   </div>
-  <div id="login-form">
-    <label for="username">Enter your username:</label>
-    <input type="text" id="username" />
-    <button onclick="login()">Login</button>
-  </div>
-  <button onclick="startGame()">Start Game</button>
-  <button onclick="drawCard()">Draw Card</button>
-  <div id="discard-pile" class="discard-pile-container"></div>
 
   <script type="module" src="/dist/client.js"></script>
 </body>

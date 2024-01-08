@@ -121,6 +121,7 @@ conn.addEventListener("message", (event) => {
 });
 
 (window as any).login = function () {
+  const usernameForm = document.getElementById("login-form") as HTMLDivElement;
   const usernameInput = document.getElementById("username") as HTMLInputElement;
   const username = usernameInput.value.trim();
 
@@ -136,6 +137,9 @@ conn.addEventListener("message", (event) => {
 
 (window as any).startGame = function () {
   conn.send('startGame');
+  const startGameButton = document.getElementById("start-game") as HTMLButtonElement;
+
+  startGameButton.style.display = "none";
 };
 
 // You can even start sending messages before the connection is open!
