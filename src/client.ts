@@ -9,7 +9,7 @@ Zug nach einmal Spielen beenden
 Anzeigen, wer gerade am Zug ist
 Sonderregeln??
 Gewinnen, wenn keine Karten mehr gespielt werden können
-Deck mischen - wenn Deck ausgespielt wurde, passiert scheiße
+Deck mischen und neu legen, wenn eine gewisse anzahl an Ablagekarten sind - wenn Deck ausgespielt wurde, passiert scheiße
 Ablagestapel auf oberste Karte reduzieren
 */
 
