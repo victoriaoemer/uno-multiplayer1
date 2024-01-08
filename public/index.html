@@ -20,24 +20,34 @@
 </head>
 
 <body>
-  <div id="game" class="game-container">
-    <div id="app">
-      <h1>🎈 Welcome to PartyKit!</h1>
-    </div>
-    <div id="login-form">
-      <image src="/images/UNO_Logo.png" width="80" alt="UNO Logo" />
-      <br>
+  <h1 class="heading">🎈 Welcome to UNO!</h1>
 
-      <label for="username">Enter your username:</label>
-      <input type="text" style="border-radius: 5px; border: 1px solid grey; padding: 5px 10px" id="username" />
-      <button onclick="login()" class="login-button"> Let's play! </button>
+  <div id="game" class="game-container">
+
+    <div id="app">
+      <div id="login-form">
+        <image src="/images/UNO_Logo.png" width="80" alt="UNO Logo" />
+        <br>
+        <label for="username">Enter your username:</label>
+        <input type="text" style="border-radius: 5px; border: 1px solid grey; padding: 5px 10px" id="username" />
+        <button onclick="login()" class="login-button"> Let's play! </button>
+      </div>
+
+      <div class="handcard-container">
+        <div id="handcards"></div>
+      </div>
+      <button onclick="drawCard()" class="drawpile">
+        <image src="/images/UNO_Logo.png" width="80" alt="UNO Logo" />
+      </button>
+      <div id="discard-pile" class="discard-pile-container"></div>
+      <div id="players-list"></div>
     </div>
-    <button onclick="startGame()" id="start-game"> Karten austeilen </button>
-    <button onclick="drawCard()" class="drawpile">
-      <image src="/images/UNO_Logo.png" width="80" alt="UNO Logo" />
-    </button>
-    <div id="discard-pile" class="discard-pile-container"></div>
-    <div id="players-list"></div>
+    <div id="info">
+      <button onclick="startGame()" id="start-game" class="startButton"> Karten austeilen </button>
+      <br>
+      <br>
+    </div>
+
 
   </div>
 

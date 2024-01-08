@@ -19,7 +19,8 @@ declare const PARTYKIT_HOST: string;
 let pingInterval: ReturnType<typeof setInterval>;
 let isFirstCard = true;
 
-const output = document.getElementById("app") as HTMLDivElement;
+const toHandcard = document.getElementById("handcards") as HTMLDivElement;
+const info = document.getElementById("info") as HTMLDivElement;
 
 const conn = new PartySocket({
   host: PARTYKIT_HOST,
@@ -54,12 +55,12 @@ function addCard(cardText: string, color: string) {
     conn.send(`moveToDiscardPile:${cardText}`);
   };
 
-  output.appendChild(card);
+  toHandcard.appendChild(card);
 }
 
 function add(text: string) {
-  output.appendChild(document.createTextNode(text));
-  output.appendChild(document.createElement("br"));
+  info.appendChild(document.createTextNode(text));
+  info.appendChild(document.createElement("br"));
 }
 
 (window as any).drawCard = function () {
@@ -90,6 +91,14 @@ function movedCardToDiscardPile(cardText: string) {
   isFirstCard = false;
 }
 
+function createUsernames(message: string) {
+  const info = document.getElementById("info") as HTMLDivElement;
+  const playersList = document.createElement("div");
+  const usernames = message.substring(8).split(",");
+  playersList.textContent = `Players: ${usernames.join(", ")}`
+  info.appendChild(playersList);
+}
+
 conn.addEventListener("message", (event) => {
   const message = event.data;
 
@@ -105,10 +114,7 @@ conn.addEventListener("message", (event) => {
     const username = message.substring(11);
     add(`${username} joined the party!`);
   } else if (message.startsWith("players:")) {
-    const playersList = document.getElementById("players-list") as HTMLDivElement;
-    const usernames = message.substring(8).split(",");
-    playersList.textContent = `Players: ${usernames.join(", ")}`;
-
+    createUsernames(message)
   } else if (message === "gameStarted") {
     const startGameButton = document.getElementById("start-game") as HTMLButtonElement;
     startGameButton.style.display = "none";
