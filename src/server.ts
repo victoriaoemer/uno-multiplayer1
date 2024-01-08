@@ -128,6 +128,7 @@ export default class Server implements Party.Server {
     } else if (message === 'startGame') {
       this.initializeDrawPile();
       this.dealCards();
+      this.room.broadcast('gameStarted');
     } else if (message === 'drawCard') {
       this.drawCard(sender);
     } if (message.startsWith("moveToDiscardPile:")) {

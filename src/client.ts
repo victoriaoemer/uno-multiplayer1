@@ -105,6 +105,9 @@ conn.addEventListener("message", (event) => {
   } else if (message.startsWith("userJoined:")) {
     const username = message.substring(11);
     add(`${username} joined the party!`);
+  } else if (message === "gameStarted") {
+    const startGameButton = document.getElementById("start-game") as HTMLButtonElement;
+    startGameButton.style.display = "none";
   } else if (message.startsWith("drawnCard:")) {
     const drawnCard = message.substring(10);
     const color = drawnCard.split(" ")[0];
@@ -137,9 +140,7 @@ conn.addEventListener("message", (event) => {
 
 (window as any).startGame = function () {
   conn.send('startGame');
-  const startGameButton = document.getElementById("start-game") as HTMLButtonElement;
 
-  startGameButton.style.display = "none";
 };
 
 // You can even start sending messages before the connection is open!
