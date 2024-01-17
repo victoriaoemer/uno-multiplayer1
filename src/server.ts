@@ -121,7 +121,9 @@ export default class Server implements Party.Server {
       deck.splice(0, 7); // Remove dealt cards from the deck
     });
   }
-
+  announceWinner(){
+    this.room.broadcast(`weHaveAWinner`);
+  }
 
   onMessage(message: string, sender: Party.Connection) {
     if (message.startsWith("login:")) {
@@ -139,7 +141,11 @@ export default class Server implements Party.Server {
     } if (message.startsWith("moveToDiscardPile:")) {
       const cardText = message.split(":")[1];
       this.moveCardToDiscardPile(sender, cardText);
-    } else {
+    }
+    if(message==='weHaveAWinner'){
+      this.announceWinner();
+     }
+   else {
       this.room.broadcast(
         `${sender.id}: ${message}`,
         [sender.id]

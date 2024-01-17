@@ -8,7 +8,7 @@ Anzeigen, wer wie viele Karten hat
 Zug nach einmal Spielen beenden
 Anzeigen, wer gerade am Zug ist
 Sonderregeln??
-Gewinnen, wenn keine Karten mehr gespielt werden können
+DONE: Gewinnen, wenn keine Karten mehr gespielt werden können
 Deck mischen und neu legen, wenn eine gewisse anzahl an Ablagekarten sind - wenn Deck ausgespielt wurde, passiert scheiße
 Ablagestapel auf oberste Karte reduzieren
 */
@@ -19,10 +19,10 @@ declare const PARTYKIT_HOST: string;
 
 let pingInterval: ReturnType<typeof setInterval>;
 let isFirstCard = true;
-
+const winMessage = document.createElement("div");
 const toHandcard = document.getElementById("handcards") as HTMLDivElement;
 const info = document.getElementById("info") as HTMLDivElement;
-
+const discardPileContainer = document.getElementById("discard-pile") as HTMLDivElement;
 const conn = new PartySocket({
   host: PARTYKIT_HOST,
   room: "my-new-room",
@@ -69,14 +69,14 @@ function add(text: string) {
 };
 
 function movedCardToDiscardPile(cardText: string) {
-  const discardPileContainer = document.getElementById("discard-pile") as HTMLDivElement;
+
+  if (toHandcard.children.length > 0 )
+  {
   const discardedCard = document.createElement("div");
   discardedCard.textContent = cardText.split(" ")[1];
   const color = cardText.split(" ")[0]; // Extract color from cardText
-
   discardedCard.className = `card discard-pile-card ${color}`;
   discardPileContainer.appendChild(discardedCard);
-
   if (!isFirstCard) {
 
     const handCards = document.getElementsByClassName("card");
@@ -89,8 +89,22 @@ function movedCardToDiscardPile(cardText: string) {
       }
     }
   }
+  if (toHandcard.children.length === 0) { 
+    winMessage.textContent = "YOU WON!!!";
+    winMessage.className = 'winmessage';
+    discardPileContainer.appendChild(winMessage);
+    conn.send('weHaveAWinner');
+  }
   isFirstCard = false;
 }
+
+
+}
+
+
+
+
+
 
 function createUsernames(message: string) {
   const info = document.getElementById("info") as HTMLDivElement;
@@ -114,7 +128,12 @@ conn.addEventListener("message", (event) => {
   } else if (message.startsWith("userJoined:")) {
     const username = message.substring(11);
     add(`${username} joined the party!`);
-  } else if (message.startsWith("players:")) {
+  } else if (message ==='weHaveAWinner'){
+    winMessage.textContent="Game has ended!!!"
+    winMessage.className='winmessage'
+    discardPileContainer.appendChild(winMessage);
+  }
+  else if (message.startsWith("players:")) {
     createUsernames(message)
   } else if (message === "gameStarted") {
     const startGameButton = document.getElementById("start-game") as HTMLButtonElement;
